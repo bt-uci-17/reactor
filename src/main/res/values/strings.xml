@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Android Reactor</string>
+
+    <string name="left_progressbar_label">Left motor:</string>
+    <string name="right_progressbar_label">Right motor:</string>
+
+    <string name="left_textview_label">Left sensor:</string>
+    <string name="right_textview_label">Right sensor:</string>
+    
+    <string name="result_text"></string>
+</resources>
