@@ -67,6 +67,9 @@ public class IOIOSimpleApp extends IOIOActivity {
             int leftAnalog = (int) (leftAnalogInput.read() * 1000);
             int rightAnalog = (int) (rightAnalogInput.read() * 1000);
 
+            leftProgressBar.setProgress(leftAnalog);
+            rightProgressBar.setProgress(rightAnalog);
+
             leftPwmOutput.setPulseWidth(500 + (leftAnalog * 2));
             rightPwmOutput.setPulseWidth(500 + (rightAnalog * 2));
 
@@ -77,8 +80,7 @@ public class IOIOSimpleApp extends IOIOActivity {
                 led.write(true);
                 resultTextView.setText("");
             }
-
-
+            
             //pwmOutput.setPulseWidth(500 + seekBar.getProgress() * 2);
 			//led.write(!toggleButton.isChecked());
 			Thread.sleep(10);
