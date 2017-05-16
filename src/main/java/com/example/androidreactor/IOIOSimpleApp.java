@@ -11,6 +11,7 @@ import ioio.lib.util.android.IOIOActivity;
 import android.os.Bundle;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class IOIOSimpleApp extends IOIOActivity {
     private TextView leftSensorTextView;
@@ -33,8 +34,6 @@ public class IOIOSimpleApp extends IOIOActivity {
         rightProgressBar = (ProgressBar) findViewById(R.id.right_progressbar);
 
         resultTextView = (TextView) findViewById(R.id.result_textview);
-
-		enableUi(false);
 	}
 
 	class Looper extends BaseIOIOLooper {
@@ -55,8 +54,16 @@ public class IOIOSimpleApp extends IOIOActivity {
 			leftPwmOutput = ioio_.openPwmOutput(11, 100);
             rightPwmOutput = ioio_.openPwmOutput(12, 100);
 
-			enableUi(true);
-
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(
+                            IOIOSimpleApp.this,
+                            "Connected to IOIO board!",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                }
+            });
 		}
 
 		@Override
@@ -80,15 +87,22 @@ public class IOIOSimpleApp extends IOIOActivity {
                 led.write(true);
                 resultTextView.setText("");
             }
-            
-            //pwmOutput.setPulseWidth(500 + seekBar.getProgress() * 2);
-			//led.write(!toggleButton.isChecked());
+
 			Thread.sleep(10);
 		}
 
 		@Override
 		public void disconnected() {
-			enableUi(false);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(
+                            IOIOSimpleApp.this,
+                            "Disconnected from IOIO board!",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                }
+            });
 		}
 	}
 
@@ -97,16 +111,13 @@ public class IOIOSimpleApp extends IOIOActivity {
 		return new Looper();
 	}
 
-	private void enableUi(final boolean enable) {
-		runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				//seekBar.setEnabled(enable);
-				//toggleButton.setEnabled(enable);
-			}
-		});
-	}
-
+    /**
+     * Displays a number on a given side of the screen.
+     *
+     * @param f The number to display
+     * @param side The side of the screen on which to display the number.
+     *             Must be "L", "l', "R", or "r" or else the function will do nothing.
+     */
 	private void displayNumber(float f, String side) {
 		final String numberString = String.format("%.2f", f);
 
