@@ -164,7 +164,7 @@ public class Main extends IOIOActivity {
      *
      * @param f The number to display
      * @param side The side of the screen on which to display the number.
-     *             Must be "L", "l', "R", or "r" or else the function will do nothing.
+     *             Must be "L", "l", "R", or "r" or else the function will do nothing.
      */
 	private void displayNumber(float f, String side) {
 		final String numberString = String.format("%.2f", f);
