@@ -13,7 +13,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class IOIOSimpleApp extends IOIOActivity {
+/**
+ * This class was renamed to Main for simplicity and understandability.
+ */
+public class Main extends IOIOActivity {
     private TextView leftSensorTextView;
     private TextView rightSensorTextView;
 
@@ -22,6 +25,10 @@ public class IOIOSimpleApp extends IOIOActivity {
 
     private TextView resultTextView;
 
+    /**
+     * Called when the main view is created.
+     * @param savedInstanceState
+     */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -36,6 +43,9 @@ public class IOIOSimpleApp extends IOIOActivity {
         resultTextView = (TextView) findViewById(R.id.result_textview);
 	}
 
+    /**
+     * Class for looping while the IOIO board is connected.
+     */
 	class Looper extends BaseIOIOLooper {
 		private AnalogInput leftAnalogInput;
         private AnalogInput rightAnalogInput;
@@ -44,6 +54,10 @@ public class IOIOSimpleApp extends IOIOActivity {
         private PwmOutput rightPwmOutput;
 		private DigitalOutput led;
 
+        /**
+         * Called when the IOIO board is connected
+         * @throws ConnectionLostException
+         */
 		@Override
 		public void setup() throws ConnectionLostException {
 			led = ioio_.openDigitalOutput(IOIO.LED_PIN, true);
@@ -58,7 +72,7 @@ public class IOIOSimpleApp extends IOIOActivity {
                 @Override
                 public void run() {
                     Toast.makeText(
-                            IOIOSimpleApp.this,
+                            Main.this,
                             "Connected to IOIO board!",
                             Toast.LENGTH_SHORT
                     ).show();
@@ -66,13 +80,25 @@ public class IOIOSimpleApp extends IOIOActivity {
             });
 		}
 
+        /**
+         * Loops while the IOIO board is connected. This is where all the action happens.
+         * @throws ConnectionLostException
+         * @throws InterruptedException
+         */
 		@Override
 		public void loop() throws ConnectionLostException, InterruptedException {
-			displayNumber(leftAnalogInput.read(), "L");
-            displayNumber(rightAnalogInput.read(), "R");
 
-            int leftAnalog = (int) (leftAnalogInput.read() * 1000);
-            int rightAnalog = (int) (rightAnalogInput.read() * 1000);
+            // Read the sensors only once per loop for increased performance
+            float leftAnalogReading = leftAnalogInput.read();
+            float rightAnalogReading = rightAnalogInput.read();
+
+            displayNumber(leftAnalogReading, "L");
+            displayNumber(rightAnalogReading, "R");
+
+            // Rather than converting from float to int a million times,
+            // let's just do it once here
+            int leftAnalog = (int) (leftAnalogReading * 1000);
+            int rightAnalog = (int) (rightAnalogReading * 1000);
 
             leftProgressBar.setProgress(leftAnalog);
             rightProgressBar.setProgress(rightAnalog);
@@ -80,7 +106,7 @@ public class IOIOSimpleApp extends IOIOActivity {
             leftPwmOutput.setPulseWidth(500 + (leftAnalog * 2));
             rightPwmOutput.setPulseWidth(500 + (rightAnalog * 2));
 
-            if ((leftAnalog > (rightAnalog - 10)) && (leftAnalog < rightAnalog + 10)) {
+            if ((leftAnalog > (rightAnalog - 100)) && (leftAnalog < rightAnalog + 100)) {
                 led.write(false); // turn on status LED (counterintuitive)
                 resultTextView.setText("yes!");
             } else {
@@ -97,7 +123,7 @@ public class IOIOSimpleApp extends IOIOActivity {
                 @Override
                 public void run() {
                     Toast.makeText(
-                            IOIOSimpleApp.this,
+                            Main.this,
                             "Disconnected from IOIO board!",
                             Toast.LENGTH_SHORT
                     ).show();
