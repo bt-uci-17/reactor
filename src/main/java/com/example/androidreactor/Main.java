@@ -15,6 +15,18 @@ import android.widget.Toast;
 
 /**
  * This class was renamed to Main for simplicity and understandability.
+ *
+ * Make sure you have the IOIO board wiring as follows:
+ *      - Distance Sensors x2:
+ *          - Red: 3.3v
+ *          - Black: Ground
+ *          - Yellow: Pins 39 (L), 40 (R).
+ *      - Servo motors x 2:
+ *          - Red: 5v
+ *          - Black: Ground
+ *          - Yellow: Pins 11 (L), 12 (R).
+ * Then, BE SURE TO USE A RELATIVELY NEW BATTERY OR YOU WILL HAVE PROBLEMS!!!!
+ * (Trust me on this one -- I banged my head against the wall for 45 minutes solving it).
  */
 public class Main extends IOIOActivity {
     private TextView leftSensorTextView;
@@ -106,12 +118,22 @@ public class Main extends IOIOActivity {
             leftPwmOutput.setPulseWidth(500 + (leftAnalog * 2));
             rightPwmOutput.setPulseWidth(500 + (rightAnalog * 2));
 
-            if ((leftAnalog > (rightAnalog - 100)) && (leftAnalog < rightAnalog + 100)) {
+            if ((leftAnalog > (rightAnalog - 75)) && (leftAnalog < rightAnalog + 75)) {
                 led.write(false); // turn on status LED (counterintuitive)
-                resultTextView.setText("yes!");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        resultTextView.setText("yes!");
+                    }
+                });
             } else {
                 led.write(true);
-                resultTextView.setText("");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        resultTextView.setText("");
+                    }
+                });
             }
 
 			Thread.sleep(10);
